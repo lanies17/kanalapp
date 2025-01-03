@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperatur Kanal</title>
+    <style>
+        body {
+            background-color: #FFC000; /* Hintergrundfarbe */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Vollbildhöhe */
+            text-align: center;
+        }
+        .container {
+            text-align: center;
+        }
+        h1, h2, p, h3 {
+            margin: 10px auto;
+            max-width: 90%; /* Begrenze die Breite auf 90% des Fensters */
+            word-wrap: break-word; /* Ermöglicht Umbruch bei langen Texten */
+        }
+        .button {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 20px auto;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für den Button */
+            transition: transform 0.2s; /* Animation bei Klick */
+        }
+        .button:hover {
+            transform: scale(1.1); /* Vergrößern bei Hover */
+        }
+        .blue { background-color: #46B1E1; } /* Button-Farbe blau */
+        .green { background-color: #92D050; } /* Button-Farbe grün */
+        .red { background-color: #C00000; } /* Button-Farbe rot */
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .legend-circle {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Schatten */
+        }
+        .legend-blue { background-color: #46B1E1; }
+        .legend-green { background-color: #92D050; }
+        .legend-red { background-color: #C00000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aktuelle Kanaltemperatur:</h1>
+        <h2 id="temperature">Lade...</h2>
+        <div id="color-button" class="button"></div>
+        <p>Willst du schwimmen? Bei ja, bitte Knopf drücken.</p>
+        <h3 id="counter">Badefrequenz: 0</h3>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-circle legend-blue"></div>
+            <span>kalt</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-circle legend-green"></div>
+            <span>ok</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-circle legend-red"></div>
+            <span>warm</span>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/temperature');
+            const data = await response.json();
+            document.getElementById('temperature').textContent = `${data.temperature}°C`;
+            document.getElementById('counter').textContent = `Badefrequenz: ${data.counter}`;
+            
+            // Button-Farbe ändern
+            const button = document.getElementById('color-button');
+            if (data.temperature < 15) {
+                button.className = 'button blue';
+            } else if (data.temperature <= 25) {
+                button.className = 'button green';
+            } else {
+                button.className = 'button red';
+            }
+        }
+
+        async function incrementCounter() {
+            const response = await fetch('/increment', { method: 'POST' });
+            const data = await response.json();
+            document.getElementById('counter').textContent = `Badefrequenz: ${data.counter}`;
+        }
+
+        // Initialdaten abrufen
+        fetchData();
+
+        // Klick-Event für Button
+        document.getElementById('color-button').addEventListener('click', incrementCounter);
+    </script>
+</body>
+</html>
