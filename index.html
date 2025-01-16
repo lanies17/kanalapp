@@ -25,14 +25,11 @@
             word-wrap: break-word; /* Ermöglicht Umbruch bei langen Texten */
         }
 
-
-
-
-      .button {
+        .button {
     display: inline-block;
     width: 100px;
     height: 100px;
-    border-radius: 50%; /* Sicherstellen, dass der Button rund ist */
+    border-radius: 50%; /* Immer rund */
     margin: 20px auto;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten */
@@ -45,12 +42,20 @@
     appearance: none !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
+    user-select: none; /* Verhindert Markieren beim Doppelklick */
+    -webkit-tap-highlight-color: transparent; /* Entfernt das Quadrat auf Mobilgeräten */
+    touch-action: manipulation; /* Optimierung für Touch-Geräte */
 }
 
 .button:active {
     transform: scale(0.9); /* Leichtes Verkleinern bei Klick */
+    background-color: #e5b800; /* Etwas dunkler beim Drücken */
 }
 
+/* Verhindert Fokusrahmen beim Drücken */
+.button:focus {
+    outline: none !important;
+}
 
 
 
