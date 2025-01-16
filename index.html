@@ -33,6 +33,9 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für den Button */
             transition: transform 0.2s; /* Animation bei Klick */
+            background-color: #FFC000; /* Standardfarbe (Gelb) */
+            border: none; /* Kein Rahmen */
+            outline: none; /* Kein Fokus-Rahmen */
         }
         .button:hover {
             transform: scale(1.1); /* Vergrößern bei Hover */
@@ -40,6 +43,7 @@
         .blue { background-color: #46B1E1; } /* Button-Farbe blau */
         .green { background-color: #92D050; } /* Button-Farbe grün */
         .red { background-color: #C00000; } /* Button-Farbe rot */
+        .yellow { background-color: #FFC000; } /* Button-Farbe gelb (Fallback) */
 
         .legend {
             display: flex;
@@ -68,8 +72,8 @@
     <div class="container">
         <h1>Aktuelle Kanaltemperatur:</h1>
         <h2 id="temperature">Lade...</h2>
-        <div id="color-button" class="button"></div>
-        <p>Willst du schwimmen? Bei ja, bitte Knopf drücken.</p>
+        <div id="color-button" class="button yellow"></div>
+        <p>Willst du schwimmen?<br>Bei ja, bitte Knopf drücken.</p> <!-- Zeilenumbruch eingefügt -->
         <h3 id="counter">Badefrequenz: 0</h3>
     </div>
     
@@ -89,34 +93,87 @@
     </div>
 
     <script>
-        async function fetchData() {
-            const response = await fetch('/temperature');
-            const data = await response.json();
-            document.getElementById('temperature').textContent = `${data.temperature}°C`;
-            document.getElementById('counter').textContent = `Badefrequenz: ${data.counter}`;
-            
-            // Button-Farbe ändern
-            const button = document.getElementById('color-button');
-            if (data.temperature < 15) {
-                button.className = 'button blue';
-            } else if (data.temperature <= 25) {
-                button.className = 'button green';
-            } else {
-                button.className = 'button red';
+        // Prüft, ob der Local Storage funktioniert
+        function checkLocalStorage() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return true;
+            } catch (e) {
+                console.error("Local Storage ist nicht verfügbar:", e);
+                return false;
             }
         }
 
-        async function incrementCounter() {
-            const response = await fetch('/increment', { method: 'POST' });
-            const data = await response.json();
-            document.getElementById('counter').textContent = `Badefrequenz: ${data.counter}`;
+        // Funktion zum Abrufen des aktuellen Zählerstands
+        function getCounter() {
+            if (!checkLocalStorage()) return 0; // Falls Local Storage nicht funktioniert, starte mit 0
+            let counter = localStorage.getItem('counter');
+            return counter ? parseInt(counter, 10) : 0; // Falls kein Wert vorhanden ist, 0 zurückgeben
         }
 
-        // Initialdaten abrufen
-        fetchData();
+        // Funktion zum Speichern des aktuellen Zählerstands
+        function saveCounter(counter) {
+            if (!checkLocalStorage()) return;
+            localStorage.setItem('counter', counter.toString());
+        }
+
+        // Funktion zum Erhöhen des Zählers
+        function incrementCounter() {
+            let counter = getCounter();
+            counter += 1; // Zähler erhöhen
+            saveCounter(counter); // Zähler speichern
+            updateCounterDisplay(counter); // Zähler im HTML aktualisieren
+        }
+
+        // Funktion zum Aktualisieren der Anzeige
+        function updateCounterDisplay(counter) {
+            document.getElementById('counter').textContent = `Badefrequenz: ${counter}`;
+        }
+
+        // Initialisiert den Zähler beim Laden der Seite
+        function initializeCounter() {
+            const counter = getCounter();
+            updateCounterDisplay(counter);
+        }
 
         // Klick-Event für Button
         document.getElementById('color-button').addEventListener('click', incrementCounter);
+
+        // Zähler beim Laden der Seite initialisieren
+        initializeCounter();
+
+        // Temperatur abrufen und Button-Farbe anpassen
+        async function fetchTemperature() {
+            try {
+                const response = await fetch('/temperature');
+                const data = await response.json();
+
+                // Temperatur anzeigen
+                if (data.temperature !== undefined) {
+                    document.getElementById('temperature').textContent = `${data.temperature}°C`;
+
+                    // Button-Farbe basierend auf Temperatur setzen
+                    const button = document.getElementById('color-button');
+                    if (data.temperature < 15) {
+                        button.className = 'button blue';  // Kalt
+                    } else if (data.temperature <= 25) {
+                        button.className = 'button green'; // OK
+                    } else {
+                        button.className = 'button red';   // Warm
+                    }
+                } else {
+                    throw new Error("Keine Temperaturdaten erhalten");
+                }
+            } catch (error) {
+                console.error("Fehler beim Abrufen der Temperatur:", error);
+                document.getElementById('temperature').textContent = "Temperatur konnte nicht geladen werden";
+                document.getElementById('color-button').className = 'button yellow'; // Setze Button auf Gelb
+            }
+        }
+
+        // Temperatur abrufen beim Laden der Seite
+        fetchTemperature();
     </script>
 </body>
 </html>

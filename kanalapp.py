@@ -7,28 +7,6 @@ from bs4 import BeautifulSoup
 
 app = FastAPI()
 
-# Datei, in der der Zählerstand gespeichert wird
-DATA_FILE = "badefrequenz.json"
-
-def load_data():
-    """Lädt den Zählerstand aus der JSON-Datei."""
-    try:
-        with open(DATA_FILE, "r") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return {"counter": 0}  # Initialer Zählerstand, falls Datei nicht existiert
-
-def save_data(data):
-    """Speichert den Zählerstand in die JSON-Datei."""
-    with open(DATA_FILE, "w") as file:
-        json.dump(data, file)
-
-def reset_counter_if_new_year():
-    """Setzt den Zählerstand zurück, falls ein neues Jahr beginnt."""
-    today = datetime.now()
-    if today.strftime("%d-%m") == "31-12":
-        save_data({"counter": 0})  # Zähler zurücksetzen
-
 def fetch_temperature_from_website():
     """Ruft die aktuelle Temperatur von der Website ab."""
     url = "https://www.gkd.bayern.de/de/fluesse/wassertemperatur/kelheim/augsburg-hochablass-12004002/messwerte"
@@ -53,7 +31,7 @@ def fetch_temperature_from_website():
         if len(columns) < 2:
             raise ValueError("Nicht genügend Spalten in der Tabelle.")
         
-        # Extrahiere Temperatur und Zeit
+        # Extrahiere Temperatur
         temperature = columns[1].get_text(strip=True)
         return float(temperature.replace(",", "."))
     except Exception as e:
@@ -63,25 +41,10 @@ def fetch_temperature_from_website():
 @app.get("/temperature")
 def get_temperature():
     """Gibt die aktuelle Temperatur zurück."""
-    reset_counter_if_new_year()
     temperature = fetch_temperature_from_website()
     if temperature is None:
         return {"error": "Temperatur konnte nicht abgerufen werden"}
     return {"temperature": temperature}
 
-@app.post("/increment")
-def increment_counter():
-    """Erhöht den allgemeinen Zähler und speichert ihn."""
-    data = load_data()
-    data["counter"] += 1
-    save_data(data)
-    return {"counter": data["counter"]}
-
-@app.get("/counter")
-def get_counter():
-    """Gibt den aktuellen Zählerstand zurück."""
-    data = load_data()
-    return {"counter": data["counter"]}
-
-# Statische Dateien mounten
+# Statische Dateien mounten (hier muss dein HTML-Dokument sein!)
 app.mount("/", StaticFiles(directory=".", html=True), name="static")
