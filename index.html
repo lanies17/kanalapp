@@ -24,22 +24,36 @@
             max-width: 90%; /* Begrenze die Breite auf 90% des Fensters */
             word-wrap: break-word; /* Ermöglicht Umbruch bei langen Texten */
         }
-        .button {
-            display: inline-block;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 20px auto;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für den Button */
-            transition: transform 0.2s; /* Animation bei Klick */
-            background-color: #FFC000; /* Standardfarbe (Gelb) */
-            border: none; /* Kein Rahmen */
-            outline: none; /* Kein Fokus-Rahmen */
-        }
-        .button:hover {
-            transform: scale(1.1); /* Vergrößern bei Hover */
-        }
+
+
+
+
+      .button {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /* Sicherstellen, dass der Button rund ist */
+    margin: 20px auto;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten */
+    transition: transform 0.2s; /* Animation */
+    background-color: #FFC000; /* Standardfarbe (Gelb) */
+
+    /* Entferne alle Standard-Button-Stile */
+    border: none !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+}
+
+.button:active {
+    transform: scale(0.9); /* Leichtes Verkleinern bei Klick */
+}
+
+
+
+
         .blue { background-color: #46B1E1; } /* Button-Farbe blau */
         .green { background-color: #92D050; } /* Button-Farbe grün */
         .red { background-color: #C00000; } /* Button-Farbe rot */
