@@ -1,0 +1,21 @@
+{
+    "name": "KanalApp",
+    "short_name": "KanalApp",
+    "icons": [
+      {
+        "src": "/static/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#FFC000",
+    "background_color": "#FFC000",
+    "display": "standalone",
+    "start_url": "/"
+  }
+  
