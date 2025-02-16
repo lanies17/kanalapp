@@ -56,9 +56,6 @@
 .button:focus {
     outline: none !important;
 }
-
-
-
         .blue { background-color: #46B1E1; } /* Button-Farbe blau */
         .green { background-color: #92D050; } /* Button-Farbe grün */
         .red { background-color: #C00000; } /* Button-Farbe rot */
@@ -174,9 +171,9 @@
 
                     // Button-Farbe basierend auf Temperatur setzen
                     const button = document.getElementById('color-button');
-                    if (data.temperature < 15) {
+                    if (data.temperature < 17) {
                         button.className = 'button blue';  // Kalt
-                    } else if (data.temperature <= 25) {
+                    } else if (data.temperature <= 19) {
                         button.className = 'button green'; // OK
                     } else {
                         button.className = 'button red';   // Warm
